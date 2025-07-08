@@ -1,18 +1,19 @@
 ---@class PjsModule
 return {
     ---@type function initializes the module
-    ---@param state PjsState
-    setup = function(state)
+    ---@param core PjsCore
+    setup = function(core)
         vim.api.nvim_create_user_command("PjsTrusted", function()
-            state.add_trusted(vim.fn.getcwd())
+            core.state.add_trusted(vim.fn.getcwd())
+            core.apply()
         end, { desc = "add {cwd} to trusted" })
 
         vim.api.nvim_create_user_command("PjsUntrusted", function()
-            state.del_trusted(vim.fn.getcwd())
+            core.state.del_trusted(vim.fn.getcwd())
         end, { desc = "removes {cwd} from trusted" })
 
         vim.api.nvim_create_user_command("PjsTrustInfo", function()
-            if state.is_trusted(vim.fn.getcwd()) then
+            if core.state.is_trusted(vim.fn.getcwd()) then
                 vim.notify("Current dir is trusted", vim.log.levels.WARN)
                 return
             else

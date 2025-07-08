@@ -1,6 +1,6 @@
 ---@class PjsCore
----@field state PjsState
----@field settings PjsConfigSettings
+---@field state PjsState an instance of the state service
+---@field settings PjsConfigSettings the settings for this session
 local M = {}
 
 ---@type function
@@ -21,12 +21,12 @@ end
 ---this function acutally loads the project settings if the current
 ---path is trusted
 ---@param settings PjsConfigSettings
----@return PjsState
+---@return PjsCore
 M.setup = function(settings)
     M.settings = settings
     M.state = require('tiny-pjs.state').setup(M.settings)
     M.apply()
-    return state
+    return M
 end
 
 return M
