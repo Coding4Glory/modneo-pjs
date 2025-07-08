@@ -20,5 +20,9 @@ return {
                 vim.notify("Current dir is NOT trusted", vim.log.levels.INFO)
             end
         end, { desc = "check if {cwd} is trusted" })
+
+        vim.api.nvim_create_user_command("PjsApply", function(opts)
+            core.apply(opts.bang)
+        end, { desc = "apply project settings", bang = true })
     end,
 }
