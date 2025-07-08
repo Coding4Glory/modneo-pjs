@@ -1,5 +1,5 @@
 ---@class PjsConfig
----@field defaults PjsConfig
+---@field defaults PjsConfigSettings default settings
 ---@field setup function merges defaults with user settings
 local M = {}
 
@@ -11,11 +11,11 @@ M.defaults = {
     consider = { '.nvim/init.lua' },
 }
 
----@param table opts the user options to override defaults
+---@param opts PjsConfigSettings? the user options to override defaults
 ---@return PjsConfigSettings the settings combined with user options
-M.setup = function(opts or {})
-    local config = vim.tbl_deep_extend('force', M.defaults, opts)
-    return config
+M.setup = function(opts)
+    local settings = vim.tbl_deep_extend('force', M.defaults, opts or {})
+    return settings
 end
 
 return M

@@ -15,7 +15,6 @@ local function open_state(path, mode)
     end
 
     return file
-
 end
 
 ---@private
@@ -28,7 +27,10 @@ local function load_state(path)
 
     local known_pjs = {}
     for line in file:lines() do
-        table.insert(known_pjs, line)
+        if line ~= nil then
+            table.insert(known_pjs, line)
+        end
+
     end
     file:close()
     return known_pjs
@@ -63,19 +65,11 @@ end
 ---@type PjsConfigSettings
 M.config = {}
 
----@type function
----@param opts PjsConfigSettings
----@return PjsState
-M.init = function(opts)
-    M.config = opts
-    return M
-end
-
 ---@type function checks if the current working directory is in a trusted path
 ---@param path string the path to the current file or project
 ---@return boolean `true` if the path is trusted, otherwise `false`
 M.is_trusted = function(path)
-    local known_pjs = load_state() or {}
+    local known_pjs = load_state(M.config.state_dir) or {}
     for _, pj_path in ipairs(known_pjs) do
         if vim.startswith(path, pj_path) then
             return true
@@ -87,7 +81,7 @@ end
 ---@type function adds a path to the trusted paths
 ---@param path string path to add to trusted paths
 M.add_trusted = function(path)
-    local current = load_state() or {}
+    local current = load_state(M.config.state_dir) or {}
     table.insert(current, path)
     write_state(current, M.config.state_dir)
 end
@@ -97,6 +91,22 @@ end
 M.del_trusted = function(path)
     local cleaned = remove_from_table(load_state(), path)
     write_state(cleaned, M.config.state_dir)
+end
+
+---@type function
+---@param opts PjsConfigSettings
+---@return PjsState
+M.setup = function(opts)
+    M.config = opts
+    local uv = (vim.uv or vim.loop)
+    if not uv.fs_stat(M.config.state_dir) then
+        vim.system({ 'mkdir', '-p', M.config.state_dir }, {}):wait()
+    end
+    -- second check to recover from deleted state files
+    if not uv.fs_stat(vim.fs.joinpath(M.config.state_dir, cf_name)) then
+        write_state({}, M.config.state_dir)
+    end
+    return M
 end
 
 return M

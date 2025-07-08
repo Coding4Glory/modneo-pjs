@@ -1,0 +1,4 @@
+column_width = 78
+indent_types = "space"
+indent_width = 4
+quote_style = "AutoPreferSingle"
