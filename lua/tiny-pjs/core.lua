@@ -1,5 +1,21 @@
 ---@class PjsCore
+---@field state PjsState
+---@field settings PjsConfigSettings
 local M = {}
+
+---@type function
+---applies the project settings to the current session if folder is trusted
+---@param force boolean set a truthy value to force enabling
+M.apply = function(force)
+    if not M.state.is_trusted(vim.fn.getcwd()) and not force then
+        return
+    end
+    for _, file in ipairs(M.settings.consider) do
+        if (vim.uv or vim.loop).fs_stat(file) then
+            vim.cmd('source ' .. file)
+        end
+    end
+end
 
 ---@type function
 ---this function acutally loads the project settings if the current
@@ -7,15 +23,9 @@ local M = {}
 ---@param settings PjsConfigSettings
 ---@return PjsState
 M.setup = function(settings)
-    local state = require('tiny-pjs.state').setup(settings)
-    if state.is_trusted(vim.fn.getcwd()) then
-        for _, file in ipairs(settings.consider) do
-            if (vim.uv or vim.loop).fs_stat(file) then
-                vim.cmd('source ' .. file)
-            end
-        end
-    end
-
+    M.settings = settings
+    M.state = require('tiny-pjs.state').setup(M.settings)
+    M.apply()
     return state
 end
 
