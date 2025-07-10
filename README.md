@@ -6,16 +6,20 @@ A simple loader for project defined settings. **USE WITH CARE**
 
 > Loading settings from a public repository has always to be considered dangerous, it could contain harmful commands executed in your user context
 
+## Features
 
-## Setup
+- Only auto load settings from trusted projects
+- supports lua and vimscript < 9
 
-Setup with Lazy 🚀
+## Setup 🚀
+
+Setup with Lazy 
 
 ```lua
 return { "coding4glory/tiny-pjs.nvim", opts = {}, lazy = false }
 ```
 
-## Configuration ⚙
+### Configuration ⚙
 
 following the default options
 
@@ -41,6 +45,14 @@ return {
     }
 }
 ```
+
+## Commands ⌨
+
+- `:PjsTrusted[!]` adds the current working directory from known projects, with bang project settings will be loaded directly
+- `:PjsUntrusted` removes the current working directory from known projects
+- `:PjsTrustInfo` notifies if the current project is trusted
+- `:PjsApply[!]` applies the current project settings, bang is required if current working directory is not trusted. This can be used to avoid trust but still load settings on demand.
+
 
 ## Contribution 🤜🤛
 

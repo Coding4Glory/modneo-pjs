@@ -1,9 +1,32 @@
+--[[
+tiny-pjs.nvim
+Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+]]--
+
 ---@class PjsState
+---simple class to handle the known.projects file to ensure only
+---tracked projects are loaded
 local M = {}
 
+-- defines the file name
 local cf_name = "known.projects"
 
----@return file*?
+---@private
+---tries to open the file
+---@return file*? the file handle on success, otherwise `nil`
 local function open_state(path, mode)
     local filename = vim.fs.joinpath(path, cf_name)
     local file, error = io.open(filename, mode)
@@ -18,7 +41,9 @@ local function open_state(path, mode)
 end
 
 ---@private
----@return table?
+---loads the current state from given path
+---@param path string path to state directory
+---@return string[]? the list of known projects
 local function load_state(path)
     local file = open_state(path, "r")
     if not file then
@@ -37,6 +62,9 @@ local function load_state(path)
 end
 
 ---@private
+---writes the state to the known.projects file
+---@param state string[] the list of known projects
+---@param path string path to state directory
 local function write_state(state, path)
     local file = open_state(path, "w")
     if not file then
@@ -51,7 +79,9 @@ local function write_state(state, path)
 end
 
 ---@private
----@return table
+---@param t table table to filter
+---@param value any element to remove
+---@return table the table without the element
 local function remove_from_table(t, value)
     for i, p in ipairs(t) do
         if p == value then
@@ -65,7 +95,8 @@ end
 ---@type PjsConfigSettings
 M.config = {}
 
----@type function checks if the current working directory is in a trusted path
+---@type function
+---checks if the current working directory is in a trusted path
 ---@param path string the path to the current file or project
 ---@return boolean `true` if the path is trusted, otherwise `false`
 M.is_trusted = function(path)
@@ -78,7 +109,8 @@ M.is_trusted = function(path)
     return false
 end
 
----@type function adds a path to the trusted paths
+---@type function
+---adds a path to the trusted paths
 ---@param path string path to add to trusted paths
 M.add_trusted = function(path)
     local current = load_state(M.config.state_dir) or {}
@@ -86,7 +118,8 @@ M.add_trusted = function(path)
     write_state(current, M.config.state_dir)
 end
 
----@type function removes a path from the trusted paths
+---@type function
+---removes a path from the trusted paths
 ---@param path string path to remove from trusted projects
 M.del_trusted = function(path)
     local cleaned = remove_from_table(load_state(), path)
@@ -94,9 +127,10 @@ M.del_trusted = function(path)
 end
 
 ---@type function
----@param opts PjsConfigSettings
----@return PjsState
-M.setup = function(opts)
+---initializes the state module
+---@param opts PjsConfigSettings the plugin settings
+---@return PjsState the project state accessor
+M.init = function(opts)
     M.config = opts
     local uv = (vim.uv or vim.loop)
     if not uv.fs_stat(M.config.state_dir) then
