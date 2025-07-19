@@ -46,6 +46,8 @@ return {
 }
 ```
 
+<!-- panvimdoc-ignore-start -->
+
 ## Commands ⌨
 
 - `:PjsTrusted[!]` adds the current working directory from known projects, with bang project settings will be loaded directly
@@ -53,8 +55,40 @@ return {
 - `:PjsTrustInfo` notifies if the current project is trusted
 - `:PjsApply[!]` applies the current project settings, bang is required if current working directory is not trusted. This can be used to avoid trust but still load settings on demand.
 
+<!-- panvimdoc-ignore-end -->
+
+<!-- panvimdoc-include-comment
+
+## Commands
+
+:PjsTrusted[!]
+
+: adds the current working directory from known projects.
+If bang is present project settings will be loaded directly.
+
+:PjsUntrusted
+
+: removes the current working directory from known projects
+
+:PjsTrustInfo
+
+: notifies about the current project's trust state
+
+:PjsApply
+
+: applies the current project settings, bang is required if current working
+directory is not trusted. This can be used to avoid trust but still load
+settings on demand. Depding on the project settings this command may also
+be used for a reload after change.
+
+
+-->
+
 
 ## Contribution 🤜🤛
 
 There is not really somthing to add, but maybe something to optimize. If you think you found something, you might add a PR. But don't be sad if it's not accepted. The module is meant be tiny 😉.
 
+## Known Issues
+
+- [which-key.nvim](https://github.com/folke/which-key.nvim) may not appear for keymas maps added with `PjsApply` containing a previously unused *leaderkey* like `<localleader>`.
