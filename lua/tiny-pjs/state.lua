@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class PjsState
 ---simple class to handle the known.projects file to ensure only
 ---tracked projects are loaded
+---@field config PjsConfigSettings
 local M = {}
 
 -- defines the file name
@@ -43,7 +44,7 @@ end
 ---@private
 ---loads the current state from given path
 ---@param path string path to state directory
----@return string[]? the list of known projects
+---@return table the list of known projects
 local function load_state(path)
     local file = open_state(path, "r")
     if not file then
@@ -92,9 +93,6 @@ local function remove_from_table(t, value)
     return t
 end
 
----@type PjsConfigSettings
-M.config = {}
-
 ---@type function
 ---checks if the current working directory is in a trusted path
 ---@param path string the path to the current file or project
@@ -122,7 +120,7 @@ end
 ---removes a path from the trusted paths
 ---@param path string path to remove from trusted projects
 M.del_trusted = function(path)
-    local cleaned = remove_from_table(load_state(), path)
+    local cleaned = remove_from_table(load_state(M.config.state_dir), path)
     write_state(cleaned, M.config.state_dir)
 end
 
