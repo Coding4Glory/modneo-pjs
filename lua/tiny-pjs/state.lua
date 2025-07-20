@@ -27,9 +27,11 @@ local cf_name = "known.projects"
 
 ---@private
 ---tries to open the file
+---@param filename string full path to the state file
+---@param mode string the mode string, see `io.open()` mode string for details
+---@see io.open()
 ---@return file*? the file handle on success, otherwise `nil`
-local function open_state(path, mode)
-    local filename = vim.fs.joinpath(path, cf_name)
+local function open_state(filename, mode)
     local file, error = io.open(filename, mode)
 
     if not file then
@@ -48,7 +50,7 @@ end
 local function load_state(path)
     local file = open_state(path, "r")
     if not file then
-        return nil
+        return {}
     end
 
     local known_pjs = {}
@@ -94,11 +96,18 @@ local function remove_from_table(t, value)
 end
 
 ---@type function
+---gets the full path of the state file
+---@return string
+M.get_filename = function()
+    return vim.fs.joinpath(M.config.state_dir, cf_name)
+end
+
+---@type function
 ---checks if the current working directory is in a trusted path
 ---@param path string the path to the current file or project
 ---@return boolean `true` if the path is trusted, otherwise `false`
 M.is_trusted = function(path)
-    local known_pjs = load_state(M.config.state_dir) or {}
+    local known_pjs = load_state(M.get_filename()) or {}
     for _, pj_path in ipairs(known_pjs) do
         if vim.startswith(path, pj_path) then
             return true
@@ -111,24 +120,24 @@ end
 ---adds a path to the trusted paths
 ---@param path string path to add to trusted paths
 M.add_trusted = function(path)
-    local current = load_state(M.config.state_dir) or {}
+    local current = load_state(M.get_filename())
     table.insert(current, path)
-    write_state(current, M.config.state_dir)
+    write_state(current, M.get_filename())
 end
 
 ---@type function
 ---removes a path from the trusted paths
 ---@param path string path to remove from trusted projects
 M.del_trusted = function(path)
-    local cleaned = remove_from_table(load_state(M.config.state_dir), path)
-    write_state(cleaned, M.config.state_dir)
+    local cleaned = remove_from_table(load_state(M.get_filename()), path)
+    write_state(cleaned, M.get_filename())
 end
 
 ---@type function
 ---gets the trusted projects as simple table
----@return table
+---@return table?
 M.get_trusted = function()
-    return load_state(M.config.state_dir)
+    return load_state(M.get_filename())
 end
 
 ---@type function
@@ -138,12 +147,13 @@ end
 M.init = function(opts)
     M.config = opts
     local uv = (vim.uv or vim.loop)
-    if not uv.fs_stat(M.config.state_dir) then
+    -- first ensure directory exists
+    if not uv.fs_stat(M.get_filename()) then
         vim.system({ 'mkdir', '-p', M.config.state_dir }, {}):wait()
     end
     -- second check to recover from deleted state files
-    if not uv.fs_stat(vim.fs.joinpath(M.config.state_dir, cf_name)) then
-        write_state({}, M.config.state_dir)
+    if not uv.fs_stat(M.get_filename()) then
+        write_state({}, M.get_filename())
     end
     return M
 end
