@@ -1,4 +1,4 @@
-*tiny-pjs.nvim.txt*          For neovim-0.12         Last change: 2025 July 19
+*tiny-pjs.nvim.txt*          For neovim-0.12         Last change: 2025 July 20
 
 ==============================================================================
 Table of Contents                            *tiny-pjs.nvim-table-of-contents*
@@ -6,8 +6,8 @@ Table of Contents                            *tiny-pjs.nvim-table-of-contents*
 1. tiny.nvim project settings support|tiny-pjs.nvim-tiny.nvim-project-settings-support|
   - Features       |tiny-pjs.nvim-tiny.nvim-project-settings-support-features|
   - Setup            |tiny-pjs.nvim-tiny.nvim-project-settings-support-setup-|
-  - Commands       |tiny-pjs.nvim-tiny.nvim-project-settings-support-commands|
-  - Contribution |tiny-pjs.nvim-tiny.nvim-project-settings-support-contribution-|
+  - Commands      |tiny-pjs.nvim-tiny.nvim-project-settings-support-commands-|
+  - Contribution|tiny-pjs.nvim-tiny.nvim-project-settings-support-contribution|
   - Known Issues|tiny-pjs.nvim-tiny.nvim-project-settings-support-known-issues|
 
 ==============================================================================
@@ -32,7 +32,7 @@ SETUP                *tiny-pjs.nvim-tiny.nvim-project-settings-support-setup-*
 Setupwith Lazy
 
 >lua
-    return { "coding4glory/tiny-pjs.nvim", opts = {}, lazy = false }
+    return { "Coding4Glory/tiny-pjs.nvim", opts = {}, lazy = false }
 <
 
 
@@ -54,7 +54,7 @@ likewise, e. g:
 
 >lua
     return { 
-        "coding4glory/tiny-pjs.nvim", 
+        "Coding4Clory/tiny-pjs.nvim", 
         opts = { 
             consider = { 
                 '.nvim/init.lua', 
@@ -65,58 +65,38 @@ likewise, e. g:
 <
 
 
-COMMANDS           *tiny-pjs.nvim-tiny.nvim-project-settings-support-commands*
+COMMANDS          *tiny-pjs.nvim-tiny.nvim-project-settings-support-commands-*
+
+                                                    *tiny-pjs.nvim-PjsTrusted*
+:PjsTrusted[!]         adds the current working directory from known
+                       projects. If bang is present project settings will be
+                       loaded directly.
+
+                                                  *tiny-pjs.nvim-PjsUntrusted*
+:PjsUntrusted          removes the current working directory from known
+                       projects
+
+                                                  *tiny-pjs.nvim-PjsTrustInfo*
+:PjsTrustInfo          notifies about the current project's trust state
+
+                                                      *tiny-pjs.nvim-PjsApply*
+:PjsApply              applies the current project settings, bang is required
+                       if current working directory is not trusted. This can
+                       be used to avoid trust but still load settings on
+                       demand. Depding on the project settings this command
+                       may also be used for a reload after change.
 
 
-                                                 *tiny-pjs.nvim-:PjsTrusted*
+CONTRIBUTION   *tiny-pjs.nvim-tiny.nvim-project-settings-support-contribution*
 
-
-:PjsTrusted[!]                         adds the current working directory
-                                       from known projects. If bang is
-                                       present project settings will be
-                                       loaded directly.
-
-
-                                               *tiny-pjs.nvim-:PjsUntrusted*
-
-
-:PjsUntrusted                          removes the current working directory
-                                       from known projects
-
-
-                                               *tiny-pjs.nvim-:PjsTrustInfo*
-
-
-:PjsTrustInfo                          notifies about the current project’s
-                                       trust state
-
-
-                                                   *tiny-pjs.nvim-:PjsApply*
-
-
-:PjsApply                              applies the current project settings,
-                                       bang is required if current working
-                                       directory is not trusted. This can be
-				       used to avoid trust but still load
-                                       settings on demand. Depding on the
-                                       project settings this command may also
-                                       be used for a reload after change.
-
-
-
-
-CONTRIBUTION  *tiny-pjs.nvim-tiny.nvim-project-settings-support-contribution-*
-
-There is not really somthing to add, but maybe something to optimize. If you
+Thereis not really somthing to add, but maybe something to optimize. If you
 think you found something, you might add a PR. But don’t be sad if it’s not
 accepted. The module is meant be tiny.
 
 
 KNOWN ISSUES   *tiny-pjs.nvim-tiny.nvim-project-settings-support-known-issues*
 
-- which-key.nvim <https://github.com/folke/which-key.nvim> may not appear for
-  keymas maps added with `PjsApply` containing a previously unused *leaderkey*
-  like `<localleader>`.
+- which-key.nvim <https://github.com/folke/which-key.nvim> may not appear for keymas maps added with `PjsApply` containing a previously unused _leaderkey_ like `<localleader>`.
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 

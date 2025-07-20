@@ -16,7 +16,7 @@ A simple loader for project defined settings. **USE WITH CARE**
 Setup with Lazy 
 
 ```lua
-return { "coding4glory/tiny-pjs.nvim", opts = {}, lazy = false }
+return { "Coding4Glory/tiny-pjs.nvim", opts = {}, lazy = false }
 ```
 
 ### Configuration ⚙
@@ -36,7 +36,7 @@ Since the `:source` function is used, lua and vimscript files can be uses likewi
 
 ```lua
 return { 
-    "coding4glory/tiny-pjs.nvim", 
+    "Coding4Clory/tiny-pjs.nvim", 
     opts = { 
         consider = { 
             '.nvim/init.lua', 
@@ -46,44 +46,29 @@ return {
 }
 ```
 
-<!-- panvimdoc-ignore-start -->
 
 ## Commands ⌨
 
-- `:PjsTrusted[!]` adds the current working directory from known projects, with bang project settings will be loaded directly
-- `:PjsUntrusted` removes the current working directory from known projects
-- `:PjsTrustInfo` notifies if the current project is trusted
-- `:PjsApply[!]` applies the current project settings, bang is required if current working directory is not trusted. This can be used to avoid trust but still load settings on demand.
+```vimdoc
+                                                    *tiny-pjs.nvim-PjsTrusted*
+:PjsTrusted[!]         adds the current working directory from known
+                       projects. If bang is present project settings will be
+                       loaded directly.
 
-<!-- panvimdoc-ignore-end -->
+                                                  *tiny-pjs.nvim-PjsUntrusted*
+:PjsUntrusted          removes the current working directory from known
+                       projects
 
-<!-- panvimdoc-include-comment
+                                                  *tiny-pjs.nvim-PjsTrustInfo*
+:PjsTrustInfo          notifies about the current project's trust state
 
-## Commands
-
-:PjsTrusted[!]
-
-: adds the current working directory from known projects.
-If bang is present project settings will be loaded directly.
-
-:PjsUntrusted
-
-: removes the current working directory from known projects
-
-:PjsTrustInfo
-
-: notifies about the current project's trust state
-
-:PjsApply
-
-: applies the current project settings, bang is required if current working
-directory is not trusted. This can be used to avoid trust but still load
-settings on demand. Depding on the project settings this command may also
-be used for a reload after change.
-
-
--->
-
+                                                      *tiny-pjs.nvim-PjsApply*
+:PjsApply              applies the current project settings, bang is required
+                       if current working directory is not trusted. This can
+                       be used to avoid trust but still load settings on
+                       demand. Depding on the project settings this command
+                       may also be used for a reload after change.
+```
 
 ## Contribution 🤜🤛
 
