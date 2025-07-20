@@ -18,15 +18,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---@class PjsConfig
 ---@field defaults PjsConfigSettings default settings
----@field setup function merges defaults with user settings
 local M = {}
 
 ---@class PjsConfigSettings
----@field state_dir string the path to the state directory, defaults to tiny-pjs.nvim inside data path
----@field consider table a list of files to consider, defaults to `{'.nvim/init.lua' }`
 M.defaults = {
+    ---@type string
+    ---string the path to the state directory, defaults to tiny-pjs.nvim inside data path
     state_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim'),
+    ---@type table
+    --- a list of files to consider, defaults to `{'.nvim/init.lua' }`
     consider = { '.nvim/init.lua' },
+    ---@type boolean
+    ---adds the edit command, defaults to false
+    enable_edit = false,
 }
 
 ---@param opts PjsConfigSettings? the user options to override defaults

@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-]]--
+]] --
 
 ---@class PjsCommands
 return {
@@ -42,10 +42,22 @@ return {
             end
         end, { desc = "check if {cwd} is trusted" })
 
-        vim.api.nvim_create_user_command("PjsApply", function(opts)
-            core.apply(opts.bang)
+        vim.api.nvim_create_user_command("PjsApply", function(args)
+            core.apply(args.bang)
         end, { desc = "apply project settings", bang = true })
 
         vim.api.nvim_create_user_command("PjsList", core.print_trusted, { desc = "list trusted projects" })
+
+        if core.settings.enable_edit then
+            vim.api.nvim_create_user_command("PjsZEdit", function(args)
+                    if not args.bang then
+                        vim.notify("Editing the state file directly is not recommended, use bang ! to override",
+                            vim.log.levels.WARN)
+                        return
+                    end
+                    core.edit_statefile()
+                end,
+                { desc = "edit trusted projects file", bang = true })
+        end
     end,
 }

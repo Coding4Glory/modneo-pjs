@@ -29,6 +29,8 @@ opts = {
     state_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim'),
     -- the files to consider during startup, files are sourced in order
     consider = { '.nvim/init.lua' },
+    -- add the edit command for the state file
+    enable_edit = false
 }
 ```
 
@@ -70,8 +72,17 @@ return {
                        may also be used for a reload after change.
 
                                                        *tiny-pjs.nvim-PjsList*
-:PjsList               *experimental* lists the trusted projects. Since it
+:PjsList               !experimental! lists the trusted projects. Since it
                        uses `vim.print()` the output is not very readable.
+
+                                                      *tiny-pjs.nvim-PjsZEdit*
+:PjsZEdit!             !disabled per default! opens the state file in a
+                       buffer. Even if enabled a bang is required to
+                       actually open the state file, otherwise a warning
+                       will be emmited
+
+                       The Z was injected in the name to let this command
+                       appear at the last position in auto completion.
 ```
 
 ## Contribution 🤜🤛

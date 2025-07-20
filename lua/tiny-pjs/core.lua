@@ -42,6 +42,12 @@ M.print_trusted = function()
 end
 
 ---@type function
+---opens a new editor buffer for the state file
+M.edit_statefile = function()
+    vim.cmd('edit ' .. M.state.get_filename())
+end
+
+---@type function
 ---this function acutally loads the project settings if the current
 ---path is trusted
 ---@param settings PjsConfigSettings
