@@ -125,6 +125,13 @@ M.del_trusted = function(path)
 end
 
 ---@type function
+---gets the trusted projects as simple table
+---@return table
+M.get_trusted = function()
+    return load_state(M.config.state_dir)
+end
+
+---@type function
 ---initializes the state module
 ---@param opts PjsConfigSettings the plugin settings
 ---@return PjsState the project state accessor

@@ -68,6 +68,10 @@ return {
                        be used to avoid trust but still load settings on
                        demand. Depding on the project settings this command
                        may also be used for a reload after change.
+
+                                                       *tiny-pjs.nvim-PjsList*
+:PjsList               *experimental* lists the trusted projects. Since it
+                       uses `vim.print()` the output is not very readable.
 ```
 
 ## Contribution 🤜🤛

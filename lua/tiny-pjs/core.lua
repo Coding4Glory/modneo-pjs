@@ -36,6 +36,12 @@ M.apply = function(force)
 end
 
 ---@type function
+---prints the trusted networks
+M.print_trusted = function()
+    vim.print(M.state.get_trusted())
+end
+
+---@type function
 ---this function acutally loads the project settings if the current
 ---path is trusted
 ---@param settings PjsConfigSettings

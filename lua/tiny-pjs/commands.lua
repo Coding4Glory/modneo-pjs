@@ -45,5 +45,7 @@ return {
         vim.api.nvim_create_user_command("PjsApply", function(opts)
             core.apply(opts.bang)
         end, { desc = "apply project settings", bang = true })
+
+        vim.api.nvim_create_user_command("PjsList", core.print_trusted, { desc = "list trusted projects" })
     end,
 }
