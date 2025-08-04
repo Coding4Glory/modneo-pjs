@@ -30,7 +30,9 @@ opts = {
     -- the files to consider during startup, files are sourced in order
     consider = { '.nvim/init.lua' },
     -- add the edit command for the state file
-    enable_edit = false
+    enable_edit = false,
+    -- only load the first found file and skip others
+    only_first = false,
 }
 ```
 
