@@ -56,7 +56,9 @@ end
 M.setup = function(settings)
     M.settings = settings
     M.state = require('tiny-pjs.state').init(M.settings)
-    M.apply()
+    xpcall(M.apply, function(err)
+        print('ERROR loading project settings: ', err)
+    end)
     return M
 end
 
