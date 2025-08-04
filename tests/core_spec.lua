@@ -1,16 +1,9 @@
 local uv = (vim.uv or vim.loop)
 local project_root = uv.cwd()
 local test_dir = vim.fs.joinpath(project_root, 'tests')
-local fixture = vim.fs.joinpath(test_dir, 'fixture')
 local state_dir = vim.fs.joinpath(test_dir, 'state')
 
-
-local test_defaults = require('tiny-pjs.config').setup({
-    state_dir = state_dir,
-    consider = { 'tests/fixture/init.lua', 'tests/fixture/second.vim' }
-})
-
-describe('modeline', function()
+describe('tiny-pjs tests', function()
     it('loads test files', function()
         require('tiny-pjs').setup({
             state_dir = state_dir,
