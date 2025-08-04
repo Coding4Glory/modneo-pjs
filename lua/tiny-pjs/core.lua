@@ -31,6 +31,7 @@ M.apply = function(force)
     for _, file in ipairs(M.settings.consider) do
         if (vim.uv or vim.loop).fs_stat(file) then
             vim.cmd('source ' .. file)
+            if M.settings.only_first then return end
         end
     end
 end

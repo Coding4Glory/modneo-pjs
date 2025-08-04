@@ -31,6 +31,9 @@ M.defaults = {
     ---@type boolean
     ---adds the edit command, defaults to false
     enable_edit = false,
+    ---@type boolean
+    ---load only the first file found
+    only_first = false,
 }
 
 ---@param opts PjsConfigSettings? the user options to override defaults
