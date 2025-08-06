@@ -24,16 +24,20 @@ local M = {}
 ---@type function
 ---applies the project settings to the current session if folder is trusted
 ---@param force boolean set a truthy value to force enabling
+---@return boolean? true if settings got applied, nil of no script was found, false if not trusted
 M.apply = function(force)
     if not M.state.is_trusted(vim.fn.getcwd()) and not force then
-        return
+        return false
     end
+    local applied = nil
     for _, file in ipairs(M.settings.consider) do
         if (vim.uv or vim.loop).fs_stat(file) then
             vim.cmd('source ' .. file)
-            if M.settings.only_first then return end
+            if M.settings.only_first then return true end
+            applied = true
         end
     end
+    return applied
 end
 
 ---@type function

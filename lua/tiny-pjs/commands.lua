@@ -43,7 +43,12 @@ return {
         end, { desc = "check if {cwd} is trusted" })
 
         vim.api.nvim_create_user_command("PjsApply", function(args)
-            core.apply(args.bang)
+            local applied = core.apply(args.bang)
+            if applied == nil then
+                vim.notify("No project config found", vim.log.levels.INFO)
+            elseif not applied then
+                vim.notify("Project not trusted", vim.log.levels.WARN)
+            end
         end, { desc = "apply project settings", bang = true })
 
         vim.api.nvim_create_user_command("PjsList", core.print_trusted, { desc = "list trusted projects" })
