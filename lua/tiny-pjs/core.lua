@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---@class PjsCore
 ---@field state PjsState an instance of the state service
----@field settings PjsConfigOptions the settings for this session
+---@field options PjsConfigOptions the settings for this session
 local M = {}
 
 ---@type function
@@ -30,10 +30,10 @@ M.apply = function(force)
         return false
     end
     local applied = nil
-    for _, file in ipairs(M.settings.consider) do
+    for _, file in ipairs(M.options.consider) do
         if (vim.uv or vim.loop).fs_stat(file) then
             vim.cmd('source ' .. file)
-            if M.settings.only_first then return true end
+            if M.options.only_first then return true end
             applied = true
         end
     end
@@ -55,11 +55,10 @@ end
 ---@type function
 ---this function acutally loads the project settings if the current
 ---path is trusted
----@param settings PjsConfigOptions
 ---@return PjsCore
-M.setup = function(settings)
-    M.settings = settings
-    M.state = require('tiny-pjs.state').init(M.settings)
+M.init = function()
+    M.options = require('tiny-pjs.config').options
+    M.state = require('tiny-pjs.state').init()
     xpcall(M.apply, function(err)
         print('ERROR loading project settings: ', err)
     end)

@@ -22,17 +22,20 @@ return {
     ---defines the user commands
     ---@param core PjsCore
     setup = function(core)
+        -- PjsTrusted
         vim.api.nvim_create_user_command("PjsTrusted", function(opts)
             core.state.add_trusted(vim.fn.getcwd())
             if opts.bang then
                 core.apply()
             end
-        end, { desc = "add {cwd} to trusted", bang = true })
+        end, { desc = "add {cwd} to trusted projects", bang = true })
 
+        -- PjsUntrusted
         vim.api.nvim_create_user_command("PjsUntrusted", function()
             core.state.del_trusted(vim.fn.getcwd())
-        end, { desc = "removes {cwd} from trusted" })
+        end, { desc = "removes {cwd} from trusted projects" })
 
+        -- PjsTrustInfo
         vim.api.nvim_create_user_command("PjsTrustInfo", function()
             if core.state.is_trusted(vim.fn.getcwd()) then
                 vim.notify("Current dir is trusted", vim.log.levels.WARN)
@@ -42,6 +45,7 @@ return {
             end
         end, { desc = "check if {cwd} is trusted" })
 
+        -- PjsApply
         vim.api.nvim_create_user_command("PjsApply", function(args)
             local applied = core.apply(args.bang)
             if applied == nil then
@@ -51,9 +55,11 @@ return {
             end
         end, { desc = "apply project settings", bang = true })
 
+        -- PjsList
         vim.api.nvim_create_user_command("PjsList", core.print_trusted, { desc = "list trusted projects" })
 
-        if core.settings.enable_edit then
+        -- PjsZEdit
+        if core.options.enable_edit then
             vim.api.nvim_create_user_command("PjsZEdit", function(args)
                     if not args.bang then
                         vim.notify("Editing the state file directly is not recommended, use bang ! to override",
@@ -65,4 +71,20 @@ return {
                 { desc = "edit trusted projects file", bang = true })
         end
     end,
+    ---removes the commands added by the plugin **experimental**
+    unload = function()
+        for name, _ in pairs(vim.api.nvim_get_commands({ builtin = false })) do
+            if vim.startswith(name, "Pjs") then
+                vim.api.nvim_del_user_command(name)
+            end
+        end
+        -- vim.api.nvim_del_user_command("PjsTrusted")
+        -- vim.api.nvim_del_user_command("PjsUntrusted")
+        -- vim.api.nvim_del_user_command("PjsTrustInfo")
+        -- vim.api.nvim_del_user_command("PjsApply")
+        -- vim.api.nvim_del_user_command("PjsList")
+        -- if require('tiny-pjs.config').options.enable_edit then
+        --     vim.api.nvim_del_user_command("PjsZEdit")
+        -- end
+    end
 }

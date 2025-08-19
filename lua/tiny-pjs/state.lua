@@ -142,10 +142,9 @@ end
 
 ---@type function
 ---initializes the state module
----@param opts PjsConfigOptions the plugin settings
 ---@return PjsState the project state accessor
-M.init = function(opts)
-    M.config = opts
+M.init = function()
+    M.config = require('tiny-pjs.config').options
     local uv = (vim.uv or vim.loop)
     -- first ensure directory exists
     if not uv.fs_stat(M.get_filename()) then

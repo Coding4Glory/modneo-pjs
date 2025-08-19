@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local M = {}
 
 ---@class PjsConfigOptions
-M.defaults = {
+local defaults = {
     ---@type string
     ---string the path to the state directory, defaults to tiny-pjs.nvim inside data path
     state_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim'),
@@ -39,7 +39,7 @@ M.defaults = {
 ---@param opts PjsConfigOptions? the user options to override defaults
 ---@return PjsConfigOptions the settings combined with user options
 M.setup = function(opts)
-    M.options = vim.tbl_deep_extend('force', M.defaults, opts or {})
+    M.options = vim.tbl_deep_extend('force', defaults, opts or {})
     return M.options
 end
 
