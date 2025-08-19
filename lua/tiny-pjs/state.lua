@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class PjsState
 ---simple class to handle the known.projects file to ensure only
 ---tracked projects are loaded
----@field config PjsConfigSettings
+---@field config PjsConfigOptions
 local M = {}
 
 -- defines the file name
@@ -142,7 +142,7 @@ end
 
 ---@type function
 ---initializes the state module
----@param opts PjsConfigSettings the plugin settings
+---@param opts PjsConfigOptions the plugin settings
 ---@return PjsState the project state accessor
 M.init = function(opts)
     M.config = opts

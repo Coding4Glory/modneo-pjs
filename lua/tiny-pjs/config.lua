@@ -17,10 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
 ---@class PjsConfig
----@field defaults PjsConfigSettings default settings
+---@field defaults PjsConfigOptions default settings
 local M = {}
 
----@class PjsConfigSettings
+---@class PjsConfigOptions
 M.defaults = {
     ---@type string
     ---string the path to the state directory, defaults to tiny-pjs.nvim inside data path
@@ -36,11 +36,11 @@ M.defaults = {
     only_first = false,
 }
 
----@param opts PjsConfigSettings? the user options to override defaults
----@return PjsConfigSettings the settings combined with user options
+---@param opts PjsConfigOptions? the user options to override defaults
+---@return PjsConfigOptions the settings combined with user options
 M.setup = function(opts)
-    local settings = vim.tbl_deep_extend('force', M.defaults, opts or {})
-    return settings
+    M.options = vim.tbl_deep_extend('force', M.defaults, opts or {})
+    return M.options
 end
 
 return M

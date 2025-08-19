@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---@class PjsCore
 ---@field state PjsState an instance of the state service
----@field settings PjsConfigSettings the settings for this session
+---@field settings PjsConfigOptions the settings for this session
 local M = {}
 
 ---@type function
@@ -55,7 +55,7 @@ end
 ---@type function
 ---this function acutally loads the project settings if the current
 ---path is trusted
----@param settings PjsConfigSettings
+---@param settings PjsConfigOptions
 ---@return PjsCore
 M.setup = function(settings)
     M.settings = settings
