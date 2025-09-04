@@ -16,14 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
----@class PjsConfig
----@field defaults PjsConfigOptions default settings
+---@class Modneo.ProjectSettings.Config
+---@field defaults Modneo.ProjectSettings.ConfigOptions default settings
 local M = {}
 
----@class PjsConfigOptions
+---@class Modneo.ProjectSettings.ConfigOptions
 local defaults = {
     ---@type string
     ---string the path to the state directory, defaults to tiny-pjs.nvim inside data path
+    -- TODO: change state path and add migration
     state_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim'),
     ---@type table
     --- a list of files to consider, defaults to `{'.nvim/init.lua' }`
@@ -36,11 +37,15 @@ local defaults = {
     only_first = false,
 }
 
----@param opts PjsConfigOptions? the user options to override defaults
----@return PjsConfigOptions the settings combined with user options
+---@param opts Modneo.ProjectSettings.ConfigOptions? the user options to override defaults
+---@return Modneo.ProjectSettings.ConfigOptions the settings combined with user options
 M.setup = function(opts)
-    M.options = vim.tbl_deep_extend('force', defaults, opts or {})
+    M.options = vim.tbl_deep_extend('force', M.options or defaults, opts or {})
     return M.options
+end
+
+M.init = function()
+    return M.setup()
 end
 
 return M

@@ -16,16 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
----@class PjsState
+---@class Modneo.ProjectSettings.State
 ---simple class to handle the known.projects file to ensure only
 ---tracked projects are loaded
----@field config PjsConfigOptions
+---@field config Modneo.ProjectSettings.ConfigOptions
 local M = {}
 
 -- defines the file name
 local cf_name = "known.projects"
 
----@private
 ---tries to open the file
 ---@param filename string full path to the state file
 ---@param mode string the mode string, see `io.open()` mode string for details
@@ -43,7 +42,6 @@ local function open_state(filename, mode)
     return file
 end
 
----@private
 ---loads the current state from given path
 ---@param path string path to state directory
 ---@return table the list of known projects
@@ -64,7 +62,6 @@ local function load_state(path)
     return known_pjs
 end
 
----@private
 ---writes the state to the known.projects file
 ---@param state string[] the list of known projects
 ---@param path string path to state directory
@@ -81,7 +78,6 @@ local function write_state(state, path)
     file:close()
 end
 
----@private
 ---@param t table table to filter
 ---@param value any element to remove
 ---@return table the table without the element
@@ -95,15 +91,15 @@ local function remove_from_table(t, value)
     return t
 end
 
----@type function
 ---gets the full path of the state file
+---@type function
 ---@return string
 M.get_filename = function()
     return vim.fs.joinpath(M.config.state_dir, cf_name)
 end
 
----@type function
 ---checks if the current working directory is in a trusted path
+---@type function
 ---@param path string the path to the current file or project
 ---@return boolean `true` if the path is trusted, otherwise `false`
 M.is_trusted = function(path)
@@ -116,8 +112,8 @@ M.is_trusted = function(path)
     return false
 end
 
----@type function
 ---adds a path to the trusted paths
+---@type function
 ---@param path string path to add to trusted paths
 M.add_trusted = function(path)
     local current = load_state(M.get_filename())
@@ -142,9 +138,9 @@ end
 
 ---@type function
 ---initializes the state module
----@return PjsState the project state accessor
+---@return Modneo.ProjectSettings.State the project state accessor
 M.init = function()
-    M.config = require('tiny-pjs.config').options
+    M.config = require('modneo-pjs.config').options
     local uv = (vim.uv or vim.loop)
     -- first ensure directory exists
     if not uv.fs_stat(M.get_filename()) then

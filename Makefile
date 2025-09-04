@@ -9,7 +9,7 @@ tests/fixture/init.lua:
 
 tests/fixture/second.vim:
 	@mkdir -p $(@D)
-	@echo "let g:pjs_test_run=g:pjs_test_run+2"
+	@echo "let g:pjs_test_run=g:pjs_test_run+2" > $@
 
 test: tests/fixture/init.lua tests/fixture/second.vim
 	@nvim \

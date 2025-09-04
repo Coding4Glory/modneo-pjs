@@ -1,6 +1,6 @@
-# tiny.nvim project settings support
+# Modneo Project Settings Support
 
-aka tiny-pjs
+aka modneo-pjs - former tiny-pjs
 
 A simple loader for project defined settings. **USE WITH CARE**
 
@@ -16,7 +16,7 @@ A simple loader for project defined settings. **USE WITH CARE**
 Setup with Lazy 
 
 ```lua
-return { "Coding4Glory/tiny-pjs.nvim", opts = {}, lazy = false }
+return { "Coding4Glory/modneo-pjs", opts = {}, lazy = false }
 ```
 
 ### Configuration ⚙
@@ -26,7 +26,7 @@ following the default options
 ```lua
 opts = {
     -- path to directory where the known.projects file will be written
-    state_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim'),
+    state_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'modneo-pjs'),
     -- the files to consider during startup, files are sourced in order
     consider = { '.nvim/init.lua' },
     -- add the edit command for the state file
@@ -40,7 +40,7 @@ Since the `:source` function is used, lua and vimscript files can be uses likewi
 
 ```lua
 return { 
-    "Coding4Clory/tiny-pjs.nvim", 
+    "Coding4Clory/modneo-pjs", 
     opts = { 
         consider = { 
             '.nvim/init.lua', 
@@ -54,35 +54,34 @@ return {
 ## Commands ⌨
 
 ```vimdoc
-                                                    *tiny-pjs.nvim-PjsTrusted*
+                                                       *modneo-pjs-PjsTrusted*
 :PjsTrusted[!]         adds the current working directory from known
                        projects. If bang is present project settings will be
                        loaded directly.
 
-                                                  *tiny-pjs.nvim-PjsUntrusted*
+                                                     *modneo-pjs-PjsUntrusted*
 :PjsUntrusted          removes the current working directory from known
                        projects
 
-                                                  *tiny-pjs.nvim-PjsTrustInfo*
+                                                     *modneo-pjs-PjsTrustInfo*
 :PjsTrustInfo          notifies about the current project's trust state
 
-                                                      *tiny-pjs.nvim-PjsApply*
+                                                         *modneo-pjs-PjsApply*
 :PjsApply              applies the current project settings, bang is required
                        if current working directory is not trusted. This can
                        be used to avoid trust but still load settings on
                        demand. Depding on the project settings this command
                        may also be used for a reload after change.
 
-                                                       *tiny-pjs.nvim-PjsList*
+                                                          *modneo-pjs-PjsList*
 :PjsList               !experimental! lists the trusted projects. Since it
                        uses `vim.print()` the output is not very readable.
 
-                                                      *tiny-pjs.nvim-PjsZEdit*
+                                                         *modneo-pjs-PjsZEdit*
 :PjsZEdit!             !disabled per default! opens the state file in a
                        buffer. Even if enabled a bang is required to
                        actually open the state file, otherwise a warning
                        will be emmited
-
                        The Z was injected in the name to let this command
                        appear at the last position in auto completion.
 ```
@@ -93,4 +92,4 @@ There is not really somthing to add, but maybe something to optimize. If you thi
 
 ## Known Issues
 
-- [which-key.nvim](https://github.com/folke/which-key.nvim) may not appear for keymas maps added with `PjsApply` containing a previously unused *leaderkey* like `<localleader>`.
+- [which-key.nvim](https://github.com/folke/which-key.nvim) may not appear for keymaps added with `PjsApply` containing a previously unused *leaderkey* like `<localleader>`.

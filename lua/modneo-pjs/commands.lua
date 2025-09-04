@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]] --
 
----@class PjsCommands
+---@class Modneo.PjsCommands
 return {
     ---@type function
     ---defines the user commands
-    ---@param core PjsCore
+    ---@param core Modneo.ProjectSettings
     setup = function(core)
         -- PjsTrusted
         vim.api.nvim_create_user_command("PjsTrusted", function(opts)
@@ -73,18 +73,11 @@ return {
     end,
     ---removes the commands added by the plugin **experimental**
     unload = function()
+        local commands = { 'PjsTrusted', 'PjsUntrusted', 'PjsTrustInfo', 'PjsApply', 'PjsList', 'PjsZEdit' }
         for name, _ in pairs(vim.api.nvim_get_commands({ builtin = false })) do
-            if vim.startswith(name, "Pjs") then
+            if vim.startswith(name, "Pjs") and vim.tbl_contains(commands, name) then
                 vim.api.nvim_del_user_command(name)
             end
         end
-        -- vim.api.nvim_del_user_command("PjsTrusted")
-        -- vim.api.nvim_del_user_command("PjsUntrusted")
-        -- vim.api.nvim_del_user_command("PjsTrustInfo")
-        -- vim.api.nvim_del_user_command("PjsApply")
-        -- vim.api.nvim_del_user_command("PjsList")
-        -- if require('tiny-pjs.config').options.enable_edit then
-        --     vim.api.nvim_del_user_command("PjsZEdit")
-        -- end
     end
 }

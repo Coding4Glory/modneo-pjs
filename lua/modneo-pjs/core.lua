@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
----@class PjsCore
----@field state PjsState an instance of the state service
----@field options PjsConfigOptions the settings for this session
+---@class Modneo.ProjectSettings
+---@field state Modneo.ProjectSettings.State an instance of the state service
+---@field options Modneo.ProjectSettings.ConfigOptions the settings for this session
 local M = {}
 
 ---@type function
@@ -55,10 +55,10 @@ end
 ---@type function
 ---this function acutally loads the project settings if the current
 ---path is trusted
----@return PjsCore
+---@return Modneo.ProjectSettings
 M.init = function()
-    M.options = require('tiny-pjs.config').options
-    M.state = require('tiny-pjs.state').init()
+    M.options = require('modneo-pjs.config').options
+    M.state = require('modneo-pjs.state').init()
     xpcall(M.apply, function(err)
         print('ERROR loading project settings: ', err)
     end)

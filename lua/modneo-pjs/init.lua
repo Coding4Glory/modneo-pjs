@@ -16,12 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
----@class ProjectSettingsLoader
----@field setup function initializes the module
+---@class Modneo.ProjectSettingsPlugin
 return {
+    init = function()
+        require('modneo-pjs.config').init()
+
+    end,
+    ---@param opts Modneo.ProjectSettings.ConfigOptions
     setup = function(opts)
-        require('tiny-pjs.config').setup(opts)
-        local core = require('tiny-pjs.core').init()
-        require('tiny-pjs.commands').setup(core)
+        require('modneo-pjs.config').setup(opts)
+        local core = require('modneo-pjs.core').init()
+        require('modneo-pjs.commands').setup(core)
     end
 }

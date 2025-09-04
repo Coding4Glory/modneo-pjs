@@ -18,7 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 return {
     check = function()
-        local state = require('tiny-pjs.state')
+        local options = require('modneo-pjs.config').options
+        if options == nil then
+            vim.health.warn('plugin not loaded')
+        end
+
+        local state = require('modneo-pjs.state')
         if (vim.uv or vim.loop).fs_stat(state.get_filename()) then
             vim.health.ok('state file exists')
         else
