@@ -10,7 +10,7 @@ for _, ct_engine in ipairs({ 'podman', 'docker' }) do
                     ".:/workspace",
                     "panvimdoc:latest",
                     "--project-name",
-                    "modneo-pjs.nvim",
+                    "modneo-pjs",
                     "--input-file",
                     "README.md",
                     "--vim-version",

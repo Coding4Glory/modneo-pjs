@@ -1,6 +1,6 @@
-# Modneo Project Settings Support
+# modneo-pjs
 
-aka modneo-pjs - former tiny-pjs
+former tiny-pjs
 
 A simple loader for project defined settings. **USE WITH CARE**
 
@@ -55,12 +55,12 @@ return {
 
 ```vimdoc
                                                        *modneo-pjs-PjsTrusted*
-:PjsTrusted[!]         adds the current working directory from known
+:PjsTrust[!]           adds the current working directory from known
                        projects. If bang is present project settings will be
                        loaded directly.
 
                                                      *modneo-pjs-PjsUntrusted*
-:PjsUntrusted          removes the current working directory from known
+:PjsUntrust            removes the current working directory from known
                        projects
 
                                                      *modneo-pjs-PjsTrustInfo*

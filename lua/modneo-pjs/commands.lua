@@ -24,6 +24,13 @@ return {
     setup = function(core)
         -- PjsTrusted
         vim.api.nvim_create_user_command("PjsTrusted", function(opts)
+            vim.notify('PjsTrusted is deprecated, use PjsTrust instead')
+            core.state.add_trusted(vim.fn.getcwd())
+            if opts.bang then
+                core.apply()
+            end
+        end, { desc = "add {cwd} to trusted projects", bang = true })
+        vim.api.nvim_create_user_command("PjsTrust", function(opts)
             core.state.add_trusted(vim.fn.getcwd())
             if opts.bang then
                 core.apply()
@@ -32,6 +39,11 @@ return {
 
         -- PjsUntrusted
         vim.api.nvim_create_user_command("PjsUntrusted", function()
+            vim.notify('PjsUntrusted is deprecated, use PjsUntrust instead')
+            core.state.del_trusted(vim.fn.getcwd())
+        end, { desc = "removes {cwd} from trusted projects" })
+
+        vim.api.nvim_create_user_command("PjsUntrust", function()
             core.state.del_trusted(vim.fn.getcwd())
         end, { desc = "removes {cwd} from trusted projects" })
 
