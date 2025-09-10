@@ -12,9 +12,10 @@ describe('modneo-pjs tests', function()
         vim.cmd('PjsApply!')
         assert.truthy(vim.g.pjs_test_run, 'setting not truthy')
         assert.is_equal(3, vim.g.pjs_test_run, 'only one file ran')
-        assert.truthy(uv.fs_stat(vim.fs.joinpath(state_dir, 'known.projects')))
+        assert.truthy(uv.fs_stat(vim.fs.joinpath(state_dir, 'known.projects')), 'state missing')
         vim.g.pjs_test_run = 0
-        vim.fs.rm(state_dir, { recursive = true })
+        -- for some reasone an error occures in nvim 0.11.4
+        pcall(function (s) vim.fs.rm(s, { recursive = true, force = true }) end, state_dir)
     end)
     it('loads only the first file', function()
         require('modneo-pjs').setup({
@@ -26,7 +27,7 @@ describe('modneo-pjs tests', function()
         assert.truthy(vim.g.pjs_test_run, 'setting not truthy')
         assert.is_equal(1, vim.g.pjs_test_run, '3 = both files ran; 2 = wrong file')
         vim.g.pjs_test_run = 0
-        vim.fs.rm(state_dir, { recursive = true, force = true })
+        pcall(function (s) vim.fs.rm(s, { recursive = true, force = true }) end, state_dir)
     end)
     it('loads no file', function()
         require('modneo-pjs').setup({
@@ -36,6 +37,6 @@ describe('modneo-pjs tests', function()
         vim.cmd('PjsApply')
         assert.is_equal(0, vim.g.pjs_test_run)
         vim.g.pjs_test_run = 0
-        vim.fs.rm(state_dir, { recursive = true })
+        pcall(function (s) vim.fs.rm(s, { recursive = true, force = true }) end, state_dir)
     end)
 end)

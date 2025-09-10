@@ -1,6 +1,6 @@
 # modneo-pjs
 
-former tiny-pjs
+former tiny-pjs.nvim
 
 A simple loader for project defined settings. **USE WITH CARE**
 

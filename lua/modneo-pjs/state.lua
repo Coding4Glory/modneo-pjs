@@ -92,14 +92,12 @@ local function remove_from_table(t, value)
 end
 
 ---gets the full path of the state file
----@type function
 ---@return string
 M.get_filename = function()
     return vim.fs.joinpath(M.config.state_dir, cf_name)
 end
 
 ---checks if the current working directory is in a trusted path
----@type function
 ---@param path string the path to the current file or project
 ---@return boolean `true` if the path is trusted, otherwise `false`
 M.is_trusted = function(path)
@@ -113,7 +111,6 @@ M.is_trusted = function(path)
 end
 
 ---adds a path to the trusted paths
----@type function
 ---@param path string path to add to trusted paths
 M.add_trusted = function(path)
     local current = load_state(M.get_filename())
@@ -121,7 +118,6 @@ M.add_trusted = function(path)
     write_state(current, M.get_filename())
 end
 
----@type function
 ---removes a path from the trusted paths
 ---@param path string path to remove from trusted projects
 M.del_trusted = function(path)
@@ -129,14 +125,12 @@ M.del_trusted = function(path)
     write_state(cleaned, M.get_filename())
 end
 
----@type function
 ---gets the trusted projects as simple table
 ---@return table?
 M.get_trusted = function()
     return load_state(M.get_filename())
 end
 
----@type function
 ---initializes the state module
 ---@return Modneo.ProjectSettings.State the project state accessor
 M.init = function()
@@ -144,7 +138,7 @@ M.init = function()
     local uv = (vim.uv or vim.loop)
     -- first ensure directory exists
     if not uv.fs_stat(M.get_filename()) then
-        vim.system({ 'mkdir', '-p', M.config.state_dir }, {}):wait()
+        uv.fs_mkdir(M.config.state_dir, tonumber('755', 8) or 0)
     end
     -- second check to recover from deleted state files
     if not uv.fs_stat(M.get_filename()) then
