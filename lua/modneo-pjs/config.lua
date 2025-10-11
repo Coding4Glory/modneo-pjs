@@ -25,7 +25,7 @@ local defaults = {
     ---@type string
     ---string the path to the state directory, defaults to tiny-pjs.nvim inside data path
     -- TODO: change state path and add migration
-    state_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim'),
+    state_dir = vim.fs.joinpath(vim.fn.stdpath('state'), 'modneo-pjs'),
     ---@type table
     --- a list of files to consider, defaults to `{'.nvim/init.lua' }`
     consider = { '.nvim/init.lua' },

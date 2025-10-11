@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
+
+
 ---@class Modneo.ProjectSettings.State
 ---simple class to handle the known.projects file to ensure only
 ---tracked projects are loaded
@@ -23,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local M = {}
 
 -- defines the file name
-local cf_name = "known.projects"
+local cf_name = "projects.lock"
 
 ---tries to open the file
 ---@param filename string full path to the state file
@@ -116,6 +118,7 @@ M.add_trusted = function(path)
     local current = load_state(M.get_filename())
     table.insert(current, path)
     write_state(current, M.get_filename())
+    print(path .. ' added to trusted projects')
 end
 
 ---removes a path from the trusted paths
@@ -131,6 +134,20 @@ M.get_trusted = function()
     return load_state(M.get_filename())
 end
 
+--#region config-migration
+
+local function migrate_config(new_path)
+    local legacy_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim')
+    local legacy_file = vim.fs.joinpath(legacy_dir, "known.projects")
+    local uv = (vim.uv or vim.loop)
+    if uv.fs_stat(legacy_file) ~= nil and uv.fs_stat(new_path) == nil then
+        uv.fs_rename(legacy_file, new_path)
+        uv.fs_rmdir(legacy_dir)
+    end
+end
+
+--#endrgion config-migration
+
 ---initializes the state module
 ---@return Modneo.ProjectSettings.State the project state accessor
 M.init = function()
@@ -140,6 +157,9 @@ M.init = function()
     if not uv.fs_stat(M.get_filename()) then
         uv.fs_mkdir(M.config.state_dir, tonumber('755', 8) or 0)
     end
+
+    migrate_config(M.get_filename())
+
     -- second check to recover from deleted state files
     if not uv.fs_stat(M.get_filename()) then
         write_state({}, M.get_filename())
