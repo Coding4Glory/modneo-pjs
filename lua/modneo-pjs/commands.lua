@@ -49,7 +49,7 @@ return {
 
         -- PjsTrustInfo
         vim.api.nvim_create_user_command("PjsTrustInfo", function()
-            if core.state.is_trusted(vim.fn.getcwd()) then
+            if core.state.is_known(vim.fn.getcwd()) then
                 vim.notify("Current dir is trusted", vim.log.levels.WARN)
                 return
             else

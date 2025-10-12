@@ -16,7 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 
-
+---@class Modneo.ProjectSettings.StateEntry
+---@field [1] string relative path of the settings file
+---@field [2] string hash of the file
 
 ---@class Modneo.ProjectSettings.State
 ---simple class to handle the known.projects file to ensure only
@@ -26,35 +28,10 @@ local M = {}
 
 local uv = (vim.uv or vim.loop)
 
+local hashsum = require('modneo-pjs.hashsum')
+
 -- defines the file name
 local cf_name = "projects.lock"
-
----@class Modneo.ProjectSettings.State.Hasher
-local H = {}
-
----@param obj vim.SystemObj
-H.result_handler = function(result)
-    if result.code == 0 then
-        return result.stdout:match('^(.*)%s?.*$')
-    else
-        error(result.stderr)
-    end
-end
-
-H.get_command = function(filename)
-    return vim.startswith(uv.os_uname().sysname, 'Windows')
-    and { 'powershell', '-Command', string.format('$hash = Get-FileHash %s -Algorithm SHA256 | $hash.Hash', filename:gsub('\\', '\\\\') ) }
-    or { 'sha256sum', filename }
-end
-
-H.get_filehash = function(filename)
-    if filename == nil or filename == '' then
-        error('no filename given')
-    end
-
-    local result = vim.system(H.get_command(filename), { text = true }):wait()
-    return H.result_handler(result)
-end
 
 ---tries to open the file
 ---@param filename string full path to the state file
@@ -75,51 +52,51 @@ end
 
 ---loads the current state from given path
 ---@param path string path to state directory
----@return table the list of known projects
+---@return table<string,table<string,string>> current internal state
 local function load_state(path)
-    local file = open_state(path, "r")
-    if not file then
+    local state_file = open_state(path, "r")
+    if not state_file then
         return {}
     end
 
     local known_pjs = {}
-    for line in file:lines() do
-        if line ~= nil then
-            table.insert(known_pjs, line)
+    local pj = nil
+    for line in state_file:lines() do
+        if line == nil or line == '' then goto continue end
+
+        if string.match(line, '^%w') then
+            pj = line
+            known_pjs[pj] = {}
+        else
+            local checksum, file = string.match(line, '^%s+(%w+)%s(.*)')
+            known_pjs[pj][file] = checksum
         end
 
+        ::continue::
     end
-    file:close()
+    state_file:close()
     return known_pjs
 end
 
----writes the state to the known.projects file
----@param state string[] the list of known projects
----@param path string path to state directory
+---writes the current state to the given path
+---@param state table<string,table<string,string>> the internal state structure
+---@param path string full path for the lock file
 local function write_state(state, path)
-    local file = open_state(path, "w")
-    if not file then
-        return
-    end
+    local file = open_state(path, 'w')
+    if not file then return end
 
-    for _, p in ipairs(state) do
+    for p, s in pairs(state) do
+        if s == nil or #s == 0 then goto continue end
+
         file:write(p .. "\n")
+        for f, h in pairs(s) do
+            file:write(string.format("    %s %s\n", h, f))
+        end
+
+        ::continue::
     end
     file:flush()
     file:close()
-end
-
----@param t table table to filter
----@param value any element to remove
----@return table the table without the element
-local function remove_from_table(t, value)
-    for i, p in ipairs(t) do
-        if p == value then
-            table.remove(t, i)
-            return t
-        end
-    end
-    return t
 end
 
 ---gets the full path of the state file
@@ -128,24 +105,31 @@ M.get_filename = function()
     return vim.fs.joinpath(M.config.state_dir, cf_name)
 end
 
----checks if the current working directory is in a trusted path
+---checks if the given directory is a known project
 ---@param path string the path to the current file or project
 ---@return boolean `true` if the path is trusted, otherwise `false`
-M.is_trusted = function(path)
+M.is_known = function(path)
     local known_pjs = load_state(M.get_filename()) or {}
-    for _, pj_path in ipairs(known_pjs) do
-        if vim.startswith(path, pj_path) then
-            return true
-        end
-    end
-    return false
+    return known_pjs[path] ~= nil
+end
+
+---gets a value indicating if the file is trusted
+---@return boolean
+M.is_trusted = function(path, file, hash)
+    local known_pjs = load_state(M.get_filename()) or {}
+    return known_pjs[path] ~= nil
+        and known_pjs[path][file] == hash
 end
 
 ---adds a path to the trusted paths
 ---@param path string path to add to trusted paths
 M.add_trusted = function(path)
     local current = load_state(M.get_filename())
-    table.insert(current, path)
+    for _, file in ipairs(M.config.consider) do
+        if uv.fs_stat(file) then
+            current[path][file] = hashsum(file)
+        end
+    end
     write_state(current, M.get_filename())
     print(path .. ' added to trusted projects')
 end
@@ -153,19 +137,20 @@ end
 ---removes a path from the trusted paths
 ---@param path string path to remove from trusted projects
 M.del_trusted = function(path)
-    local cleaned = remove_from_table(load_state(M.get_filename()), path)
-    write_state(cleaned, M.get_filename())
+    local current = load_state(M.get_filename())
+    current[path] = nil
+    write_state(current, M.get_filename())
 end
 
 ---gets the trusted projects as simple table
----@return table?
+---@return table<string,table<string,string>>?
 M.get_trusted = function()
     return load_state(M.get_filename())
 end
 
 --#region config-migration
 
-local function migrate_config(new_path)
+local function migrate_statefile(new_path)
     local legacy_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim')
     local legacy_file = vim.fs.joinpath(legacy_dir, "known.projects")
     if uv.fs_stat(legacy_file) ~= nil and uv.fs_stat(new_path) == nil then
@@ -174,19 +159,51 @@ local function migrate_config(new_path)
     end
 end
 
+---converts the statefile
+---@param filename string name of the state file
+---@param options Modneo.ProjectSettings.ConfigOptions current options to find considered files
+local function convert_statefile(filename, options)
+    local file = open_state(filename, "r")
+    if not file then
+        return
+    end
+
+    local known_pjs = {}
+    for line in file:lines() do
+        if line ~= nil then
+            -- already converted
+            if line:match('%s+.*') then file:close() return end
+
+            known_pjs[line] = {}
+            for _, c in ipairs(options.consider) do
+                local candidate = vim.fs.joinpath(line, c)
+                if uv.fs_stat(candidate) then
+                    local checksum = hashsum(candidate)
+                    table.insert(known_pjs[line], { file, checksum })
+                end
+            end
+        end
+    end
+    file:close()
+    write_state(known_pjs, filename)
+end
+
 --#endrgion config-migration
 
 ---initializes the state module
 ---@return Modneo.ProjectSettings.State the project state accessor
 M.init = function()
     M.config = require('modneo-pjs.config').options
-    local uv = (vim.uv or vim.loop)
     -- first ensure directory exists
     if not uv.fs_stat(M.get_filename()) then
         uv.fs_mkdir(M.config.state_dir, tonumber('755', 8) or 0)
     end
 
-    migrate_config(M.get_filename())
+    local success, err = pcall(migrate_statefile, M.get_filename())
+    if not success then print('could not migrate state file: ' .. err) end
+
+    success, err = pcall(convert_statefile, M.get_filename(), M.config)
+    if not success then print('could not convert state file: ' .. err) end
 
     -- second check to recover from deleted state files
     if not uv.fs_stat(M.get_filename()) then

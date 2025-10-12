@@ -21,38 +21,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@field options Modneo.ProjectSettings.ConfigOptions the settings for this session
 local M = {}
 
----@type function
+local hashsum = require('modneo-pjs.hashsum')
+
 ---applies the project settings to the current session if folder is trusted
----@param force boolean set a truthy value to force enabling
+---@param force boolean? set a truthy value to force enabling
 ---@return boolean? true if settings got applied, nil of no script was found, false if not trusted
 M.apply = function(force)
-    if not M.state.is_trusted(vim.fn.getcwd()) and not force then
-        return false
+    local current_dir = vim.fn.getcwd()
+    local applied = false
+    if not M.state.is_known(current_dir) and not force then
+        return applied
     end
-    local applied = nil
     for _, file in ipairs(M.options.consider) do
         if (vim.uv or vim.loop).fs_stat(file) then
-            vim.cmd('source ' .. file)
-            if M.options.only_first then return true end
-            applied = true
+            local chash = hashsum(file)
+            if M.state.is_trusted(current_dir, file, chash) or force then
+                vim.cmd('source ' .. file)
+                if M.options.only_first then return true end
+                applied = true
+            end
         end
     end
     return applied
 end
 
----@type function
 ---prints the trusted networks
 M.print_trusted = function()
     vim.print(M.state.get_trusted())
 end
 
----@type function
 ---opens a new editor buffer for the state file
 M.edit_statefile = function()
     vim.cmd('edit ' .. M.state.get_filename())
 end
 
----@type function
 ---this function acutally loads the project settings if the current
 ---path is trusted
 ---@return Modneo.ProjectSettings
