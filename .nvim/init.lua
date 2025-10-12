@@ -1,3 +1,39 @@
-vim.cmd('source .nvim/genhelp.lua')
+for _, ct_engine in ipairs({ "podman", "docker" }) do
+	local found = vim.fn.system("which " .. ct_engine)
+	if found ~= nil and found:len() > 0 then
+		vim.keymap.set("n", "<localleader>bd", function()
+			vim.system({
+				"podman",
+				"run",
+				"--rm",
+				"-v",
+				".:/workspace",
+				"panvimdoc:latest",
+				"--project-name",
+				"modneo-pjs",
+				"--input-file",
+				"README.md",
+				"--vim-version",
+				"neovim-0.11",
+				"--toc",
+				"true",
+				"--demojify",
+				"true",
+				"--dedup-subheadings",
+				"true",
+			}, {
+				text = true,
+			}, function(obj)
+				if obj.code == 0 then
+					print(obj.stdout)
+				else
+					print(obj.stderr)
+				end
+			end)
+		end, { desc = "[b]uild [d]ocumentation" })
+		return
+	end
+end
 
-vim.keymap.set('n', '<localleader>t', '<Cmd>PlenaryBustedDirectory tests<CR>', { desc = "run [t]ests" })
+bind_pandoc()
+vim.keymap.set("n", "<localleader>t", "<Cmd>PlenaryBustedDirectory tests<CR>", { desc = "run [t]ests" })

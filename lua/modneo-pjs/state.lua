@@ -150,6 +150,7 @@ end
 
 --#region config-migration
 
+---performs statefile migration for v0.2.0 to v0.2.1
 local function migrate_statefile(new_path)
     local legacy_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim')
     local legacy_file = vim.fs.joinpath(legacy_dir, "known.projects")
@@ -159,7 +160,7 @@ local function migrate_statefile(new_path)
     end
 end
 
----converts the statefile
+---converts the statefile for v0.2.1 to v0.3.0
 ---@param filename string name of the state file
 ---@param options Modneo.ProjectSettings.ConfigOptions current options to find considered files
 local function convert_statefile(filename, options)
@@ -171,7 +172,7 @@ local function convert_statefile(filename, options)
     local known_pjs = {}
     for line in file:lines() do
         if line ~= nil then
-            -- already converted
+            -- already converted?
             if line:match('%s+.*') then file:close() return end
 
             known_pjs[line] = {}
