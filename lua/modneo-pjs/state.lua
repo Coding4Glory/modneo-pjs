@@ -64,11 +64,11 @@ local function load_state(path)
     for line in state_file:lines() do
         if line == nil or line == '' then goto continue end
 
-        if string.match(line, '^%w') then
+        if string.match(line, '^[^%s].*$') then
             pj = line
             known_pjs[pj] = {}
         else
-            local checksum, file = string.match(line, '^%s+(%w+)%s(.*)')
+            local checksum, file = string.match(line, '^%s+(%x+)%s(.*)$')
             known_pjs[pj][file] = checksum
         end
 
@@ -86,7 +86,7 @@ local function write_state(state, path)
     if not file then return end
 
     for p, s in pairs(state) do
-        if s == nil or #s == 0 then goto continue end
+        if s == nil or vim.tbl_isempty(s) then goto continue end
 
         file:write(p .. "\n")
         for f, h in pairs(s) do
@@ -127,6 +127,7 @@ M.add_trusted = function(path)
     local current = load_state(M.get_filename())
     for _, file in ipairs(M.config.consider) do
         if uv.fs_stat(file) then
+            if current[path] == nil then current[path] = {} end
             current[path][file] = hashsum(file)
         end
     end
@@ -180,13 +181,15 @@ local function convert_statefile(filename, options)
                 local candidate = vim.fs.joinpath(line, c)
                 if uv.fs_stat(candidate) then
                     local checksum = hashsum(candidate)
-                    table.insert(known_pjs[line], { file, checksum })
+                    known_pjs[line][file] = checksum
                 end
             end
         end
     end
     file:close()
+    if vim.tbl_isempty(known_pjs) then return end
     write_state(known_pjs, filename)
+    print("pjs state file converted")
 end
 
 --#endrgion config-migration

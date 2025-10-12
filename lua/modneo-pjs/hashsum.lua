@@ -29,7 +29,8 @@ end
 ---@param result vim.SystemCompleted
 local result_handler = function(result)
     if result.code == 0 then
-        return result.stdout:match('^(.*)%s?.*$')
+        local hash = result.stdout:match('^(%w*)%s?.*$')
+        return hash
     else
         error(result.stderr)
     end
