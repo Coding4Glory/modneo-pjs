@@ -24,8 +24,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@field config Modneo.ProjectSettings.ConfigOptions
 local M = {}
 
+local uv = (vim.uv or vim.loop)
+
 -- defines the file name
 local cf_name = "projects.lock"
+
+---@class Modneo.ProjectSettings.State.Hasher
+local H = {}
+
+---@param obj vim.SystemObj
+H.result_handler = function(result)
+    if result.code == 0 then
+        return result.stdout:match('^(.*)%s?.*$')
+    else
+        error(result.stderr)
+    end
+end
+
+H.get_command = function(filename)
+    return vim.startswith(uv.os_uname().sysname, 'Windows')
+    and { 'powershell', '-Command', string.format('$hash = Get-FileHash %s -Algorithm SHA256 | $hash.Hash', filename:gsub('\\', '\\\\') ) }
+    or { 'sha256sum', filename }
+end
+
+H.get_filehash = function(filename)
+    if filename == nil or filename == '' then
+        error('no filename given')
+    end
+
+    local result = vim.system(H.get_command(filename), { text = true }):wait()
+    return H.result_handler(result)
+end
 
 ---tries to open the file
 ---@param filename string full path to the state file
@@ -139,7 +168,6 @@ end
 local function migrate_config(new_path)
     local legacy_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'tiny-pjs.nvim')
     local legacy_file = vim.fs.joinpath(legacy_dir, "known.projects")
-    local uv = (vim.uv or vim.loop)
     if uv.fs_stat(legacy_file) ~= nil and uv.fs_stat(new_path) == nil then
         uv.fs_rename(legacy_file, new_path)
         uv.fs_rmdir(legacy_dir)
