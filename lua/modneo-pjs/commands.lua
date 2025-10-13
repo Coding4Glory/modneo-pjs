@@ -49,11 +49,26 @@ return {
 
         -- PjsTrustInfo
         vim.api.nvim_create_user_command("PjsTrustInfo", function()
-            if core.state.is_known(vim.fn.getcwd()) then
-                vim.notify("Current dir is trusted", vim.log.levels.WARN)
+            local trust_info = core.state.get_trusted()
+            if trust_info == nil then
+                vim.notify('could not load state file', vim.log.levels.ERROR)
+                return
+            end
+            local cwd = vim.fn.getcwd()
+            if trust_info[cwd] == nil then
+                vim.notify("Current dir is NOT trusted", vim.log.levels.INFO)
                 return
             else
-                vim.notify("Current dir is NOT trusted", vim.log.levels.INFO)
+                vim.notify("Current dir is known", vim.log.levels.WARN)
+                local hashsum = require'modneo-pjs.hashsum'
+                for file, hash in pairs(trust_info[cwd]) do
+                    local recalc = hashsum(file)
+                    if recalc == hash then
+                        vim.notify(file .. ' is trusted', vim.log.levels.INFO)
+                    else
+                        vim.notify(file .. ' has wrong checksum', vim.log.levels.ERROR)
+                    end
+                end
             end
         end, { desc = "check if {cwd} is trusted" })
 

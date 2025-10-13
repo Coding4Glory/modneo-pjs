@@ -35,5 +35,4 @@ for _, ct_engine in ipairs({ "podman", "docker" }) do
 	end
 end
 
-bind_pandoc()
 vim.keymap.set("n", "<localleader>t", "<Cmd>PlenaryBustedDirectory tests<CR>", { desc = "run [t]ests" })
