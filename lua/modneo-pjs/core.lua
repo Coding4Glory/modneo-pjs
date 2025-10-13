@@ -35,10 +35,10 @@ M.apply = function(force)
     for _, file in ipairs(M.options.consider) do
         if (vim.uv or vim.loop).fs_stat(file) then
             local chash = hashsum(file)
-            if M.state.is_trusted(current_dir, file, chash) or force then
+            if force or M.state.is_trusted(current_dir, file, chash) then
                 vim.cmd('source ' .. file)
-                if M.options.only_first then return true end
                 applied = true
+                if M.options.only_first then return applied end
             end
         end
     end

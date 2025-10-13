@@ -181,7 +181,7 @@ local function convert_statefile(filename, options)
                 local candidate = vim.fs.joinpath(line, c)
                 if uv.fs_stat(candidate) then
                     local checksum = hashsum(candidate)
-                    known_pjs[line][file] = checksum
+                    known_pjs[line][c] = checksum
                 end
             end
         end
@@ -200,7 +200,7 @@ M.init = function()
     M.config = require('modneo-pjs.config').options
     -- first ensure directory exists
     if not uv.fs_stat(M.get_filename()) then
-        uv.fs_mkdir(M.config.state_dir, tonumber('755', 8) or 0)
+        uv.fs_mkdir(M.config.state_dir, tonumber('755', 8) or 493)
     end
 
     local success, err = pcall(migrate_statefile, M.get_filename())
