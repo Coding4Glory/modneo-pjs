@@ -141,6 +141,7 @@ M.del_trusted = function(path)
     local current = load_state(M.get_filename())
     current[path] = nil
     write_state(current, M.get_filename())
+    print(path .. ' removed from trusted projects')
 end
 
 ---gets the trusted projects as simple table
