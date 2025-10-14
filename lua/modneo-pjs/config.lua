@@ -34,6 +34,12 @@ local defaults = {
     ---load only the first file found
     ---@type boolean
     only_first = false,
+    ---Set to false to disable checksum validation.
+    ---This can improve performance in closed environments or be usefull
+    ---when debugging project settings.
+    ---**Warning:** Setting this to false is not recomended!
+    ---@type boolean
+    checksum = true,
 }
 
 ---@param opts Modneo.ProjectSettings.ConfigOptions? the user options to override defaults

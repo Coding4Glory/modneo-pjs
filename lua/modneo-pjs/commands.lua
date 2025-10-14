@@ -59,6 +59,9 @@ return {
                 vim.notify("Current dir is NOT trusted", vim.log.levels.INFO)
                 return
             else
+                local wrong_checksum = core.options.checksum
+                    and ' has wrong checksum'
+                    or ' has wrong checksum but would be applied!'
                 vim.notify("Current dir is known", vim.log.levels.WARN)
                 local hashsum = require'modneo-pjs.hashsum'
                 for file, hash in pairs(trust_info[cwd]) do
@@ -66,7 +69,7 @@ return {
                     if recalc == hash then
                         vim.notify(file .. ' is trusted', vim.log.levels.INFO)
                     else
-                        vim.notify(file .. ' has wrong checksum', vim.log.levels.ERROR)
+                        vim.notify(file .. wrong_checksum, vim.log.levels.ERROR)
                     end
                 end
             end
