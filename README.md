@@ -9,6 +9,8 @@ A simple loader for project defined settings. **USE WITH CARE**
 ## Features
 
 - Only auto load settings from trusted projects
+- Hashes files to avoid execution after change
+    - Automatically re-hashes the file if edited in nvim
 - supports lua and vimscript < 9
 
 ## Setup 🚀
@@ -33,6 +35,13 @@ opts = {
     enable_edit = false,
     -- only load the first found file and skip others
     only_first = false,
+    ---automatically hash files on local edit
+    autohash = true,
+    ---Set to false to disable checksum validation.
+    ---This can improve performance in closed environments or be usefull
+    ---when debugging project settings.
+    ---**Warning:** Setting this to false is not recomended!
+    checksum = true,
 }
 ```
 
