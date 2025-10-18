@@ -34,6 +34,9 @@ local defaults = {
     ---load only the first file found
     ---@type boolean
     only_first = false,
+    ---automatically hash files on local edit
+    ---@type boolean
+    autohash = true,
     ---Set to false to disable checksum validation.
     ---This can improve performance in closed environments or be usefull
     ---when debugging project settings.

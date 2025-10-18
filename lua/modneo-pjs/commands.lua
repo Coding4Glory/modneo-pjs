@@ -100,9 +100,20 @@ return {
                 end,
                 { desc = "edit trusted projects file", bang = true })
         end
+
+        if core.options.autohash and core.options.checksum then
+            vim.api.nvim_create_autocmd('BufWritePost',
+                {
+                    group = vim.api.nvim_create_augroup('PjsAutoHash', { clear = true }),
+                    pattern = table.concat(core.options.consider, ','),
+                    desc = 'autohash project settings on save',
+                    command = 'PjsTrust',
+                })
+        end
     end,
     ---removes the commands added by the plugin **experimental**
     unload = function()
+        vim.api.nvim_del_augroup_by_name('PjsAutoHash')
         local commands = { 'PjsTrusted', 'PjsUntrusted', 'PjsTrustInfo', 'PjsApply', 'PjsList', 'PjsZEdit' }
         for name, _ in pairs(vim.api.nvim_get_commands({ builtin = false })) do
             if vim.startswith(name, "Pjs") and vim.tbl_contains(commands, name) then
